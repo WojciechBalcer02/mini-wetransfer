@@ -1,4 +1,5 @@
 import os, uuid
+import mimetypes
 from flask import Flask, request, send_from_directory, redirect, url_for, render_template
 
 UPLOAD_FOLDER = 'uploads'
@@ -30,12 +31,15 @@ def download_link(filename):
 
 @app.route('/file/<filename>')
 def serve_file(filename):
+    mime_type, _ = mimetypes.guess_type(filename)
+    if not mime_type:
+        mime_type = 'application/octet-stream'
     return send_from_directory(
-    app.config['UPLOAD_FOLDER'],
-    filename,
-    as_attachment=True,
-    mimetype='video/mp4'
-)
+        app.config['UPLOAD_FOLDER'],
+        filename,
+        as_attachment=True,
+        mimetype=mime_type
+    )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
